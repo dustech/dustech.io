@@ -1,6 +1,9 @@
-﻿using Dustech.Io.Idp;
+﻿using Dustech.Io.Auth.Config;
+using Dustech.Io.Idp;
 using Serilog;
 using static Dustech.Io.Auth.Config.ConfigurationParser;
+using static Dustech.Io.Auth.Config.Network;
+using static Dustech.Io.Auth.Config.DataProtection;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -13,16 +16,23 @@ try
     var builder = WebApplication.CreateBuilder(args);
     var license = toString(builder.Configuration["DuendeIdentityServerLicense"]);
 
+    var networkConfiguration = ParseNetworkConfiguration(builder);
+    var dataProtectionConfiguration = ParseDataProtectionConfiguration(builder);
+    
+    var x509 = Certificate.create(dataProtectionConfiguration, networkConfiguration.Proxied);
+    
     builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
         .Enrich.FromLogContext()
         .ReadFrom.Configuration(ctx.Configuration));
 
     var app = builder
-        .ConfigureServices(license)
+        .ConfigureServices(license,networkConfiguration,dataProtectionConfiguration,x509)
         .ConfigurePipeline();
     
     app.Run();
+    
+    x509.Dispose();
 }
 catch (Exception ex)
 {
@@ -32,4 +42,17 @@ finally
 {
     Log.Information("Shut down complete");
     Log.CloseAndFlush();
+}
+
+
+IdpNetworkConfiguration ParseNetworkConfiguration(WebApplicationBuilder webApplicationBuilder)
+{
+    return parseNetworkConfiguration(webApplicationBuilder.Configuration.GetSection(nameof(IdpNetworkConfiguration)));
+}
+
+DataProtectionConfiguration ParseDataProtectionConfiguration(
+    WebApplicationBuilder webApplicationBuilder)
+{
+    return parseDataProtectionConfiguration(
+        webApplicationBuilder.Configuration.GetSection(nameof(DataProtectionConfiguration)));
 }

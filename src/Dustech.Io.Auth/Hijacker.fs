@@ -4,19 +4,18 @@ module Hijacker =
     open Microsoft.AspNetCore.Authentication.OpenIdConnect
     open Microsoft.AspNetCore.Http.Extensions    
     
-    let replaceUri (networkConfiguration: NetworkConfiguration) (uri: string) =
+    let replaceUri (networkConfiguration: IdpNetworkConfiguration) (uri: string) =
         show $"Try to substitute: {uri}"
 
         let fromInternalToExternal =
             uri
-                .Replace(networkConfiguration.WebBffInternalUri, networkConfiguration.WebBffExternalUri)
                 .Replace(networkConfiguration.AuthorityInternalUri, networkConfiguration.AuthorityExternalUri)
                 .Replace("http://", "https://")
 
         show $"From internal to external URI result: {fromInternalToExternal}"
         fromInternalToExternal
 
-    let Hijack (networkConfiguration: NetworkConfiguration) (context: RedirectContext) =
+    let Hijack (networkConfiguration: IdpNetworkConfiguration) (context: RedirectContext) =
         async {
 
             let maybePostLogoutRedirectUri =

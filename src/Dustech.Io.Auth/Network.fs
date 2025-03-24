@@ -2,9 +2,7 @@
 
 [<AutoOpen>]
 module Network =
-    type NetworkConfiguration =
+    type IdpNetworkConfiguration =
         { Proxied: bool
           AuthorityInternalUri: string
-          AuthorityExternalUri: string
-          WebBffInternalUri: string
-          WebBffExternalUri: string }
+          AuthorityExternalUri: string }

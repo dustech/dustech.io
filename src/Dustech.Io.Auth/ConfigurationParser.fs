@@ -25,11 +25,9 @@ module ConfigurationParser =
     let toString value = value |> Option.ofObj |> toStringCore    
 
     let parseNetworkConfiguration (configSection: IConfigurationSection) =
-        { NetworkConfiguration.Proxied = configSection["Proxied"] |> toBool
+        { IdpNetworkConfiguration.Proxied = configSection["Proxied"] |> toBool
           AuthorityInternalUri = configSection["AuthorityInternalUri"] |> toString
-          AuthorityExternalUri = configSection["AuthorityExternalUri"] |> toString
-          WebBffInternalUri = configSection["WebBffInternalUri"] |> toString
-          WebBffExternalUri = configSection["WebBffExternalUri"] |> toString }
+          AuthorityExternalUri = configSection["AuthorityExternalUri"] |> toString }
 
     let parseDataProtectionConfiguration (configSection: IConfigurationSection) =
             { X509__FileName = configSection["X509:FileName"] |> toString

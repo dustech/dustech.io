@@ -75,8 +75,6 @@ module Client =
             networkConfiguration.Proxied
             networkConfiguration.AuthorityInternalUri
             networkConfiguration.AuthorityExternalUri
-            networkConfiguration.WebBffInternalUri
-            networkConfiguration.WebBffExternalUri
             name
             id
             secret
