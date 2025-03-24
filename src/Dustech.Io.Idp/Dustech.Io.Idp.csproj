@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<AnalysisMode>Default</AnalysisMode>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Duende.IdentityServer" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="FSharp.Core" />
+	</ItemGroup>
+</Project>
