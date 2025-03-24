@@ -5,11 +5,16 @@
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<AnalysisMode>Default</AnalysisMode>
-	</PropertyGroup>
+	  <UserSecretsId>19fee6cb-65ac-4868-bc96-8439b51c5e80</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Duende.IdentityServer" />
 		<PackageReference Include="Serilog.AspNetCore" />
 		<PackageReference Include="FSharp.Core" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Dustech.Io.Auth\Dustech.Io.Auth.fsproj" />
 	</ItemGroup>
 </Project>

@@ -4,18 +4,21 @@ namespace Dustech.Io.Idp;
 
 internal static class HostingExtensions
 {
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, string license)
     {
         builder.Services.AddRazorPages();
 
         builder.Services.AddIdentityServer(options =>
             {
+                options.LicenseKey = license;
+                
                 
                 options.EmitStaticAudienceClaim = true;
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients);
+            .AddInMemoryClients(Config.Clients)
+            .AddTestUsers(TestUsers.Users);
 
         return builder.Build();
     }

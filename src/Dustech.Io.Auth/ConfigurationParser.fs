@@ -1,4 +1,4 @@
-namespace TheGrindOrDie.Auth.Config
+namespace Dustech.Io.Auth.Config
 
 open Microsoft.Extensions.Configuration
 open Microsoft.VisualBasic.CompilerServices

@@ -1,4 +1,4 @@
-namespace TheGrindOrDie.Auth.Config
+namespace Dustech.Io.Auth.Config
 
 [<AutoOpen>]
 module Common =
