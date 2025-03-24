@@ -1,0 +1,80 @@
+name: tgod
+
+services:
+  
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - /etc/tgod/certbot/www/:/var/www/certbot/:rw
+      - /etc/tgod/certbot/conf/:/etc/letsencrypt/:rw
+    networks:
+      - tgod-network
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      #- "80:80"
+      - "443:443"
+    #restart: always
+    volumes:
+      - /etc/tgod/nginx/conf/:/etc/nginx/conf.d/:ro
+      - /etc/tgod/certbot/www/:/var/www/certbot/:ro
+      - /etc/tgod/certbot/conf/:/etc/nginx/ssl/:ro
+    networks:
+      - tgod-network
+  
+  idp:
+    image: tgod-idp-uat
+    expose:
+      - "5001"
+    environment:
+      ASPNETCORE_HTTP_PORTS: "5001"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: true
+      DataProtectionConfiguration__x509__FileName: ${TGod_DataProtectionConfiguration__X509__FileName}
+      DataProtectionConfiguration__x509__Key: ${TGod_DataProtectionConfiguration__X509__Key}
+      DataProtectionConfiguration__X509__Path: ${TGod_DataProtectionConfiguration__X509__Path}
+      DataProtectionConfiguration__DataProtectionPath: ${TGod_DataProtectionConfiguration__DataProtectionPath}
+      NetworkConfiguration__AuthorityInternalUri: ${TGod_Uat_AuthorityInternalUri}
+      NetworkConfiguration__WebBffInternalUri: ${TGod_Uat_WebBffInternalUri}
+      NetworkConfiguration__AuthorityExternalUri: ${TGod_Uat_AuthorityExternalUri}
+      NetworkConfiguration__WebBffExternalUri: ${TGod_Uat_WebBffExternalUri}
+      DuendeIdentityServerLicence: ${DuendeIdentityServerLicence}
+    volumes:
+      - ${TGod_DataProtectionConfiguration__DataProtectionPath}:${TGod_DataProtectionConfiguration__DataProtectionPath}
+      - ${TGod_DataProtectionConfiguration__X509__Path}:${TGod_DataProtectionConfiguration__X509__Path}:ro
+    networks:
+      - tgod-network 
+
+  webbff:
+    image: tgod-web-bff-uat
+    expose:
+      - "5004"
+    environment:
+      ASPNETCORE_HTTP_PORTS: "5004"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: true
+      DataProtectionConfiguration__x509__FileName: ${TGod_DataProtectionConfiguration__X509__FileName}
+      DataProtectionConfiguration__x509__Key: ${TGod_DataProtectionConfiguration__X509__Key}
+      DataProtectionConfiguration__X509__Path: ${TGod_DataProtectionConfiguration__X509__Path}
+      DataProtectionConfiguration__DataProtectionPath: ${TGod_DataProtectionConfiguration__DataProtectionPath}
+      NetworkConfiguration__AuthorityInternalUri: ${TGod_Uat_AuthorityInternalUri}
+      NetworkConfiguration__WebBffInternalUri: ${TGod_Uat_WebBffInternalUri}
+      NetworkConfiguration__AuthorityExternalUri: ${TGod_Uat_AuthorityExternalUri}
+      NetworkConfiguration__WebBffExternalUri: ${TGod_Uat_WebBffExternalUri}
+    volumes:
+      - ${TGod_DataProtectionConfiguration__DataProtectionPath}:${TGod_DataProtectionConfiguration__DataProtectionPath}
+      - ${TGod_DataProtectionConfiguration__X509__Path}:${TGod_DataProtectionConfiguration__X509__Path}:ro
+    networks:
+      - tgod-network
+
+
+  webapp:
+    image: tgod-web-app-uat
+    ports:
+      - "4200:80"
+    networks:
+      - tgod-network
+
+
+networks:
+  tgod-network:
+    driver: bridge

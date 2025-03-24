@@ -1,0 +1,47 @@
+name: dustech
+
+services:
+  
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - /etc/tgod/certbot/www/:/var/www/certbot/:rw
+      - /etc/tgod/certbot/conf/:/etc/letsencrypt/:rw
+    networks:
+      - dustech-network
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    #restart: always
+    volumes:
+      - /etc/tgod/nginx/conf/:/etc/nginx/conf.d/:ro
+      - /etc/tgod/certbot/www/:/var/www/certbot/:ro
+      - /etc/tgod/certbot/conf/:/etc/nginx/ssl/:ro
+    networks:
+      - dustech-network
+  
+  idp:
+    image: tgod-idp-prod
+    expose:
+      - "5001"
+    environment:
+      ASPNETCORE_HTTP_PORTS: "5001"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: true
+      DataProtectionConfiguration__x509__FileName: ${TGod_DataProtectionConfiguration__X509__FileName}
+      DataProtectionConfiguration__x509__Key: ${TGod_DataProtectionConfiguration__X509__Key}
+      DataProtectionConfiguration__X509__Path: ${TGod_DataProtectionConfiguration__X509__Path}
+      DataProtectionConfiguration__DataProtectionPath: ${TGod_DataProtectionConfiguration__DataProtectionPath}
+      DuendeIdentityServerLicence: ${DuendeIdentityServerLicence}
+    volumes:
+      - ${TGod_DataProtectionConfiguration__DataProtectionPath}:${TGod_DataProtectionConfiguration__DataProtectionPath}
+      - ${TGod_DataProtectionConfiguration__X509__Path}:${TGod_DataProtectionConfiguration__X509__Path}:ro
+    networks:
+      - tgod-network 
+
+
+networks:
+  dustech-network:
+    driver: bridge
